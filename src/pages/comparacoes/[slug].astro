@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import softwares from '../../data/softwares.json';
+
+export async function getStaticPaths() {
+  return softwares.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+---
+
+<Layout title={`${item.titulo} - Análise e Preços 2026 | AuditTech`}>
+	
+	<!-- SEO Schema.org para Estrelas nos Resultados do Google -->
+	<script type="application/ld+json" set:html={JSON.stringify({
+		"@context": "https://schema.org/",
+		"@type": "Review",
+		"itemReviewed": {
+			"@type": "SoftwareApplication",
+			"name": item.titulo
+		},
+		"author": {
+			"@type": "Organization",
+			"name": "AuditTech"
+		},
+		"reviewRating": {
+			"@type": "Rating",
+			"ratingValue": item.scoreAlpha,
+			"bestRating": "5"
+		}
+	})} />
+
+	<div style="max-width: 850px; margin: 0 auto;">
+		
+		<!-- Breadcrumb de Navegação -->
+		<nav style="font-size: 0.85rem; color: #64748b; margin-bottom: 24px;">
+			<a href="/" style="color: #0284c7; text-decoration: none;">Início</a> &rarr; 
+			<a href="/#catalogo" style="color: #0284c7; text-decoration: none;">Comparações</a> &rarr; 
+			<span style="color: #0f172a; font-weight: 600;">{item.titulo}</span>
+		</nav>
+
+		<!-- Cabeçalho do Artigo / Oferta -->
+		<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); margin-bottom: 30px;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+				<span style="background: rgba(2, 132, 199, 0.1); color: #0284c7; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
+					{item.categoria}
+				</span>
+				<div style="display: flex; gap: 12px; font-size: 0.9rem; font-weight: 800; background: #f8fafc; padding: 6px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+					<span style="color: #b45309;">⭐ Opção A: {item.scoreAlpha}</span>
+					<span style="color: #6d28d9;">⭐ Opção B: {item.scoreBeta}</span>
+				</div>
+			</div>
+
+			<h1 style="font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: #0f172a; margin: 0 0 16px 0; line-height: 1.2;">
+				{item.titulo}
+			</h1>
+
+			<p style="font-size: 1.15rem; color: #475569; line-height: 1.7; margin: 0 0 30px 0;">
+				{item.descricao}
+			</p>
+
+			<!-- CTA Principal de Alta Conversão -->
+			<div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #a7f3d0; border-radius: 16px; padding: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+				<div>
+					<span style="display: inline-block; color: #047857; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px;">🔥 DESCONTO EXCLUSIVO ATIVO</span>
+					<h4 style="margin: 0; color: #065f46; font-size: 1.1rem; font-weight: 700;">Garante o melhor preço verificado para esta ferramenta</h4>
+				</div>
+				<a 
+					href={item.linkAfiliado || "#"} 
+					target="_blank" 
+					rel="nofollow noopener" 
+					style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); display: inline-block; text-align: center; transition: transform 0.2s;"
+				>
+					Ver Oferta &rarr;
+				</a>
+			</div>
+		</div>
+
+		<!-- Secção de Análise Detalhada -->
+		<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); margin-bottom: 40px;">
+			<h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 20px;">Análise Completa e Veredicto</h2>
+			<div style="color: #475569; font-size: 1.05rem; line-height: 1.8; display: flex; flex-direction: column; gap: 16px;">
+				<p>
+					Ao escolher entre as soluções avaliadas em <strong>{item.titulo}</strong>, é fundamental ponderar os custos a longo prazo, a facilidade de implementação na empresa e o suporte técnico fornecido.
+				</p>
+				<p>
+					Com base nos nossos parâmetros de auditoria e procura de mercado, esta seleção destaca-se pela excelente relação qualidade-preço, garantindo que evitas custos ocultos nas subscrições mensais ou anuais.
+				</p>
+			</div>
+
+			<!-- Rodapé do Artigo com CTA de Fecho -->
+			<div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #e2e8f0; text-align: center;">
+				<p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">Pronto para avançar com total segurança e poupar na subscrição?</p>
+				<a 
+					href={item.linkAfiliado || "#"} 
+					target="_blank" 
+					rel="nofollow noopener" 
+					style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: #ffffff; padding: 16px 32px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 1rem; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); display: inline-block;"
+				>
+					Aceder ao Site Oficial com Desconto &rarr;
+				</a>
+			</div>
+		</div>
+
+	</div>
+</Layout>

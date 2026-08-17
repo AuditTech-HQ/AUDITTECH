@@ -1,0 +1,79 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	</head>
+	<body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column;">
+		
+		<!-- Cabeçalho Global -->
+		<header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); background-color: rgba(255, 255, 255, 0.9);">
+			<div style="max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+				<a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">
+					<span style="color: #0f172a;">Audit</span><span style="color: #2563eb;">Tech</span>
+				</a>
+				<span style="background: rgba(16, 185, 129, 0.1); color: #047857; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2);">
+					100% Independente
+				</span>
+			</div>
+		</header>
+
+		<!-- Conteúdo Principal -->
+		<main style="flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 40px 24px;">
+			<slot />
+		</main>
+
+		<!-- Rodapé com Aviso de Afiliados e Link Legal -->
+		<footer style="background: #ffffff; border-top: 1px solid #e2e8f0; padding: 40px 24px; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: auto;">
+			<div style="max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;">
+				<p style="margin: 0; font-weight: 600; color: #0f172a;">AuditTech • O teu comparador de software de confiança para 2026</p>
+				<p style="margin: 0; line-height: 1.6; color: #64748b;">
+					<em>Aviso de Transparência:</em> Podemos receber uma comissão de afiliado se comprares ou subscrevieres através dos nossos links, sem qualquer custo adicional para ti.
+				</p>
+				<div style="margin-top: 4px;">
+					<a href="/politica-de-privacidade" style="color: #0284c7; text-decoration: none; font-weight: 600;">Política de Privacidade e Cookies</a>
+				</div>
+				<p style="margin: 8px 0 0 0; font-size: 0.8rem; color: #94a3b8;">© 2026 AuditTech. Todos os direitos reservados.</p>
+			</div>
+		</footer>
+
+		<!-- Banner de Cookies RGPD (Discreto e Funcional) -->
+		<div id="cookieBanner" style="position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 500px; background: #0f172a; color: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 1000; display: none; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #334155;">
+			<p style="margin: 0; font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
+				Utilizamos cookies para melhorar a experiência e gerir links de afiliados. Podes saber mais na nossa <a href="/politica-de-privacidade" style="color: #38bdf8; text-decoration: underline;">Política de Privacidade</a>.
+			</p>
+			<button id="acceptCookies" style="background: #10b981; color: #ffffff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;">
+				Aceitar
+			</button>
+		</div>
+
+		<!-- Script para Gestão do Consentimento de Cookies -->
+		<script>
+			const banner = document.getElementById('cookieBanner');
+			const acceptBtn = document.getElementById('acceptCookies');
+
+			if (!localStorage.getItem('cookiesAccepted')) {
+				if (banner) banner.style.display = 'flex';
+			}
+
+			acceptBtn?.addEventListener('click', () => {
+				localStorage.setItem('cookiesAccepted', 'true');
+				if (banner) banner.style.display = 'none';
+			});
+		</script>
+
+	</body>
+</html>
