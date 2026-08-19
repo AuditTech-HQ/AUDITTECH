@@ -1,0 +1,551 @@
+---
+import softwares from '../data/softwares.json';
+import { adaptSoftwareRegistry } from '../lib/adapter';
+
+const registry = adaptSoftwareRegistry(softwares);
+
+const categoryLabels: Record<string, string> = {
+  ai: 'Inteligência Artificial',
+  crm: 'CRM',
+  automation: 'Automação',
+  productivity: 'Produtividade',
+  marketing: 'Marketing',
+  support: 'Atendimento',
+  finance: 'Finanças',
+  'project-management': 'Gestão de projetos',
+  hr: 'Recursos Humanos',
+  analytics: 'Analytics',
+  security: 'Segurança',
+  other: 'Outro',
+};
+
+const companyLabels: Record<string, string> = {
+  startup: 'Startup',
+  small: 'Pequena empresa',
+  medium: 'Média empresa',
+  enterprise: 'Empresa grande',
+};
+---
+
+<section class="finder">
+
+  <div class="finder-header">
+
+    <span class="eyebrow">
+      AUDITTECH FINDER
+    </span>
+
+    <h2>
+      Encontra software com base no que realmente precisas.
+    </h2>
+
+    <p>
+      Define os teus critérios. O AuditTech analisa as ferramentas
+      disponíveis e mostra onde existe compatibilidade, conflito
+      ou falta de informação.
+    </p>
+
+  </div>
+
+
+  <form id="finderForm" class="finder-form">
+
+    <div class="field">
+
+      <label for="category">
+        Categoria
+      </label>
+
+      <select id="category" required>
+
+        <option value="">
+          Escolhe uma categoria
+        </option>
+
+        {Object.entries(categoryLabels).map(([value, label]) => (
+          <option value={value}>
+            {label}
+          </option>
+        ))}
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="companySize">
+        Tamanho da empresa
+      </label>
+
+      <select id="companySize" required>
+
+        <option value="">
+          Escolhe o tamanho
+        </option>
+
+        {Object.entries(companyLabels).map(([value, label]) => (
+          <option value={value}>
+            {label}
+          </option>
+        ))}
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="goal">
+        Objetivo
+      </label>
+
+      <input
+        id="goal"
+        type="text"
+        placeholder="Ex.: automation"
+        required
+      />
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="budget">
+        Orçamento máximo
+      </label>
+
+      <input
+        id="budget"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Ex.: 50"
+      />
+
+    </div>
+
+
+    <button type="submit">
+      Encontrar software →
+    </button>
+
+  </form>
+
+
+  <div id="finderResults" class="results">
+
+    <div class="results-empty">
+
+      <strong>
+        Define os teus critérios.
+      </strong>
+
+      <span>
+        Os resultados auditados aparecerão aqui.
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script define:vars={{ registry }}>
+
+  const form =
+    document.querySelector('#finderForm') as HTMLFormElement | null;
+
+  const results =
+    document.querySelector('#finderResults') as HTMLElement | null;
+
+  form?.addEventListener('submit', (event) => {
+
+    event.preventDefault();
+
+    const category =
+      (document.querySelector('#category') as HTMLSelectElement).value;
+
+    const companySize =
+      (document.querySelector('#companySize') as HTMLSelectElement).value;
+
+    const goal =
+      (document.querySelector('#goal') as HTMLInputElement).value
+        .trim()
+        .toLowerCase();
+
+    const budgetValue =
+      (document.querySelector('#budget') as HTMLInputElement).value;
+
+    const budget =
+      budgetValue === ''
+        ? undefined
+        : Number(budgetValue);
+
+
+    const matches = registry.map((software) => {
+
+      const categoryMatch =
+        software.category === category;
+
+      const sizeMatch =
+        software.targetCompanySize.includes(companySize);
+
+      const goalMatch =
+        software.primaryGoals.some((item) =>
+          item.toLowerCase().includes(goal)
+        );
+
+      const priceKnown =
+        software.pricing.startingPrice !== undefined;
+
+      const budgetMatch =
+        budget === undefined ||
+        (
+          priceKnown &&
+          software.pricing.startingPrice! <= budget
+        );
+
+
+      const hasMismatch =
+        !categoryMatch ||
+        !sizeMatch ||
+        !goalMatch ||
+        !budgetMatch;
+
+
+      const hasUnknown =
+        budget !== undefined && !priceKnown;
+
+
+      let result = 'CONFIRMADO';
+
+      if (hasMismatch) {
+        result = 'NÃO CORRESPONDE';
+      } else if (hasUnknown) {
+        result = 'NÃO VERIFICADO';
+      }
+
+
+      return {
+        software,
+        result,
+        categoryMatch,
+        sizeMatch,
+        goalMatch,
+        budgetMatch,
+        priceKnown,
+      };
+
+    });
+
+
+    const sorted =
+      matches.sort((a, b) => {
+
+        const order: Record<string, number> = {
+          'CONFIRMADO': 0,
+          'NÃO VERIFICADO': 1,
+          'NÃO CORRESPONDE': 2,
+        };
+
+        return order[a.result] - order[b.result];
+
+      });
+
+
+    if (!results) return;
+
+
+    results.innerHTML = sorted.map((item) => {
+
+      const software = item.software;
+
+      const className =
+        item.result === 'CONFIRMADO'
+          ? 'match'
+          : item.result === 'NÃO VERIFICADO'
+            ? 'unknown'
+            : 'mismatch';
+
+
+      return `
+        <article class="result-card">
+
+          <div class="result-top">
+
+            <div>
+              <span class="result-category">
+                ${software.category}
+              </span>
+
+              <h3>
+                ${software.name}
+              </h3>
+            </div>
+
+            <span class="result-status ${className}">
+              ${
+                item.result === 'CONFIRMADO'
+                  ? '✓'
+                  : item.result === 'NÃO VERIFICADO'
+                    ? '?'
+                    : '×'
+              }
+
+              ${item.result}
+            </span>
+
+          </div>
+
+
+          <div class="checks">
+
+            <span class="${item.categoryMatch ? 'yes' : 'no'}">
+              ${item.categoryMatch ? '✓' : '×'}
+              Categoria
+            </span>
+
+            <span class="${item.sizeMatch ? 'yes' : 'no'}">
+              ${item.sizeMatch ? '✓' : '×'}
+              Empresa
+            </span>
+
+            <span class="${item.goalMatch ? 'yes' : 'no'}">
+              ${item.goalMatch ? '✓' : '×'}
+              Objetivo
+            </span>
+
+            <span class="${item.budgetMatch ? 'yes' : 'no'}">
+              ${item.budgetMatch ? '✓' : '×'}
+              Orçamento
+            </span>
+
+          </div>
+
+
+          <a href="/comparacoes/${software.id}">
+            Ver auditoria completa →
+          </a>
+
+        </article>
+      `;
+
+    }).join('');
+
+  });
+
+</script>
+
+
+<style>
+
+.finder {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px 80px;
+}
+
+.finder-header {
+  max-width: 700px;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  color: #0284c7;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.finder-header h2 {
+  margin: 12px 0;
+  color: #0f172a;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.finder-header p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.finder-form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.06);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field label {
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: white;
+  color: #0f172a;
+  font: inherit;
+}
+
+.finder-form button {
+  align-self: end;
+  padding: 13px;
+  border: 0;
+  border-radius: 9px;
+  background: #0f172a;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.finder-form button:hover {
+  background: #0284c7;
+}
+
+.results {
+  margin-top: 25px;
+}
+
+.results-empty {
+  padding: 30px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.results-empty strong,
+.results-empty span {
+  display: block;
+}
+
+.results-empty span {
+  margin-top: 5px;
+  color: #64748b;
+}
+
+.result-card {
+  margin-top: 12px;
+  padding: 22px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.result-category {
+  color: #0284c7;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result-card h3 {
+  margin: 7px 0 0;
+  color: #0f172a;
+}
+
+.result-status {
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.result-status.match {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.result-status.unknown {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.result-status.mismatch {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.checks span {
+  padding: 6px 9px;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.checks .yes {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.checks .no {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.result-card a {
+  color: #0284c7;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 850px) {
+
+  .finder-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 550px) {
+
+  .finder-form {
+    grid-template-columns: 1fr;
+  }
+
+  .result-top {
+    flex-direction: column;
+  }
+
+}
+
+</style>

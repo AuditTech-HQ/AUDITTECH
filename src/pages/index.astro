@@ -1,125 +1,1246 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import softwares from '../data/softwares.json';
+import SoftwareFinder from '../components/SoftwareFinder.astro';
+
+const categoryLabels: Record<string, string> = {
+  ai: 'IA',
+  crm: 'CRM',
+  automation: 'Automação',
+  productivity: 'Produtividade',
+  marketing: 'Marketing',
+  support: 'Atendimento',
+  finance: 'Finanças',
+  'project-management': 'Gestão de projetos',
+  hr: 'Recursos Humanos',
+  analytics: 'Analytics',
+  security: 'Segurança',
+  other: 'Outro',
+};
+
+const statusLabels: Record<string, string> = {
+  active: 'Ativo',
+  beta: 'Beta',
+  legacy: 'Legacy',
+};
 ---
 
-<Layout title="Portal Oficial de Comparações | As Melhores Ofertas de Software">
-	
-	<!-- Estilos CSS Extra para Hover e Interatividade Premium -->
-	<style>
-		.software-card {
-			transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-		}
-		.software-card:hover {
-			transform: translateY(-6px);
-			box-shadow: 0 20px 40px -15px rgba(2, 132, 199, 0.15) !important;
-			border-color: #0ea5e9 !important;
-		}
-		.cta-button {
-			transition: all 0.2s ease;
-		}
-		.cta-button:hover {
-			filter: brightness(1.1);
-			transform: scale(1.02);
-		}
-	</style>
+<Layout title="AuditTech — Compare Software com Dados Verificáveis">
 
-	<!-- Hero Section - Psicologia de Recompensa Imediata -->
-	<section style="text-align: center; padding: 50px 0 70px 0; max-width: 850px; margin: 0 auto;">
-		<div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 18px; border-radius: 30px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);">
-			<span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
-			<span style="color: #047857; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.02em;">OFERTAS EXCLUSIVAS E VERIFICADAS • 2026</span>
-		</div>
-		
-		<h1 style="font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 800; margin: 0 0 20px 0; letter-spacing: -0.03em; line-height: 1.15;">
-			<span style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #0284c7;">Decisões de Software</span> <br/>
-			<span style="color: #0f172a; -webkit-text-fill-color: #0f172a !important;">Sem Erros nem Viés</span>
-		</h1>
-		
-		<p style="color: #475569; font-size: 1.2rem; margin: 0 auto 35px auto; max-width: 700px; line-height: 1.7;">
-			Poupa tempo e dinheiro. Comparações diretas e os preços mais competitivos do mercado para equipar a tua empresa com total segurança.
-		</p>
+  <main>
 
-		<!-- Barra de Pesquisa de Alta Performance -->
-		<div style="position: relative; max-width: 580px; margin: 0 auto 20px auto;">
-			<input 
-				type="text" 
-				id="searchBar" 
-				placeholder="Pesquisar por software, CRM, ERP, ferramentas..." 
-				style="width: 100%; background: #ffffff; border: 2px solid #cbd5e1; color: #0f172a; padding: 20px 20px 20px 52px; border-radius: 16px; font-size: 1rem; outline: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);"
-			/>
-			<svg style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; color: #0284c7;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-		</div>
+    <!-- FINDER -->
 
-		<!-- Gatilhos de Confiança Absoluta (Social Proof) -->
-		<div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; color: #64748b; font-size: 0.88rem; font-weight: 600; margin-top: 20px;">
-			<span style="display: flex; align-items: center; gap: 6px;">🛡️ Análises Independentes</span>
-			<span style="display: flex; align-items: center; gap: 6px;">⚡ Descontos Atualizados</span>
-			<span style="display: flex; align-items: center; gap: 6px;">⭐ Escolhas de Confiança</span>
-		</div>
-	</section>
+    <SoftwareFinder />
 
-	<!-- Grelha de Ofertas Otimizada para Cliques -->
-	<section id="catalogo" style="margin-bottom: 60px;">
-		<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;">
-			<h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 0;">Ferramentas em Destaque</h2>
-			<span style="color: #64748b; font-size: 0.9rem; font-weight: 600;" id="counterResults">{softwares.length} ofertas disponíveis</span>
-		</div>
-		
-		<div id="gridSoftwares" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px;">
-			{softwares.map((item) => (
-				<article class="software-card" data-title={item.titulo.toLowerCase()} data-desc={item.descricao.toLowerCase()} style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
-					<div>
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-							<span style="background: rgba(2, 132, 199, 0.1); color: #0284c7; padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">{item.categoria}</span>
-							<div style="display: flex; gap: 10px; font-size: 0.85rem; font-weight: 800; background: #f8fafc; padding: 4px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-								<span style="color: #b45309;" title="Score Opção A">⭐ {item.scoreAlpha}</span>
-								<span style="color: #6d28d9;" title="Score Opção B">⭐ {item.scoreBeta}</span>
-							</div>
-						</div>
-						
-						<h3 style="margin: 0 0 12px 0; font-size: 1.4rem; font-weight: 800; color: #0f172a;">
-							<a href={`/comparacoes/${item.slug}`} style="color: inherit; text-decoration: none;">{item.titulo}</a>
-						</h3>
-						
-						<p style="color: #475569; margin: 0 0 28px 0; font-size: 0.95rem; line-height: 1.6;">{item.descricao}</p>
-					</div>
 
-					<div style="border-top: 1px solid #f1f5f9; padding-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-						<span style="font-size: 0.85rem; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-							<span style="width: 6px; height: 6px; background-color: #10b981; border-radius: 50%;"></span> Melhor Preço Verificado
-						</span>
-						<a href={`/comparacoes/${item.slug}`} class="cta-button" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); display: inline-block;">Ver Oferta &rarr;</a>
-					</div>
-				</article>
-			))}
-		</div>
-	</section>
+    <!-- HERO -->
 
-	<!-- Script de Pesquisa Instantânea -->
-	<script>
-		const searchInput = document.getElementById('searchBar') as HTMLInputElement;
-		const cards = document.querySelectorAll('.software-card');
-		const counter = document.getElementById('counterResults');
+    <section class="hero">
 
-		searchInput?.addEventListener('input', (e) => {
-			const term = (e.target as HTMLInputElement).value.toLowerCase();
-			let visibleCount = 0;
+      <div class="trust-badge">
+        <span class="dot"></span>
+        Dados verificados e metodologia transparente
+      </div>
 
-			cards.forEach((card) => {
-				const title = card.getAttribute('data-title') || '';
-				const desc = card.getAttribute('data-desc') || '';
-				if (title.includes(term) || desc.includes(term)) {
-					(card as HTMLElement).style.display = 'flex';
-					visibleCount++;
-				} else {
-					(card as HTMLElement).style.display = 'none';
-				}
-			});
+      <h1>
+        Encontra o software certo.
+        <span>Sem palpites.</span>
+      </h1>
 
-			if (counter) {
-				counter.innerText = `${visibleCount} ofertas disponíveis`;
-			}
-		});
-	</script>
+      <p class="hero-description">
+        O AuditTech compara software com base em critérios verificáveis,
+        evidencia as fontes e distingue claramente entre aquilo que sabemos
+        e aquilo que não podemos confirmar.
+      </p>
+
+      <div class="search-box">
+
+        <span class="search-icon">⌕</span>
+
+        <input
+          id="search"
+          type="search"
+          placeholder="Pesquisar software..."
+          autocomplete="off"
+        />
+
+      </div>
+
+
+      <div class="principles">
+
+        <div>
+          <strong>🛡 Evidência</strong>
+          <span>Dados com origem identificada</span>
+        </div>
+
+        <div>
+          <strong>⚖ Independência</strong>
+          <span>Publicidade não altera resultados</span>
+        </div>
+
+        <div>
+          <strong>🔍 Transparência</strong>
+          <span>Sem inventar informação em falta</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CATALOGO -->
+
+    <section class="catalog">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="eyebrow">
+            CATÁLOGO
+          </span>
+
+          <h2>
+            Software analisado
+          </h2>
+
+          <p>
+            Explora as soluções atualmente presentes no catálogo AuditTech.
+          </p>
+
+        </div>
+
+        <span class="catalog-count">
+          {softwares.length} soluções
+        </span>
+
+      </div>
+
+
+      <div class="software-grid" id="softwareGrid">
+
+        {softwares.map((software) => (
+
+          <article
+            class="software-card"
+            data-name={software.name.toLowerCase()}
+            data-category={software.category.toLowerCase()}
+          >
+
+            <div class="card-top">
+
+              <span class="category">
+                {categoryLabels[software.category] ?? software.category}
+              </span>
+
+              <span class="status">
+
+                <span class="status-dot"></span>
+
+                {statusLabels[software.commercialStatus] ??
+                  software.commercialStatus}
+
+              </span>
+
+            </div>
+
+
+            <h3>
+              {software.name}
+            </h3>
+
+
+            <p class="goal">
+
+              {software.primaryGoals.length > 0
+                ? software.primaryGoals.join(' · ')
+                : 'Objetivo não verificado'}
+
+            </p>
+
+
+            <div class="card-info">
+
+              <div>
+
+                <span>
+                  Preço inicial
+                </span>
+
+                <strong>
+
+                  {software.pricing.startingPrice !== undefined
+                    ? `${software.pricing.currency === 'EUR' ? '€' : software.pricing.currency === 'GBP' ? '£' : '$'}${software.pricing.startingPrice}`
+                    : 'Não verificado'}
+
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Verificado
+                </span>
+
+                <strong>
+                  {new Date(
+                    software.verifiedAt
+                  ).toLocaleDateString('pt-PT')}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <a
+              href={`/comparacoes/${software.id}`}
+              class="card-button"
+            >
+              Ver análise →
+            </a>
+
+          </article>
+
+        ))}
+
+      </div>
+
+
+      <div id="noResults" class="no-results">
+
+        <h3>
+          Não encontrámos esse software.
+        </h3>
+
+        <p>
+          Ainda não significa que não exista.
+          Significa apenas que não está no catálogo AuditTech.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- METODOLOGIA -->
+
+    <section class="methodology">
+
+      <div class="methodology-content">
+
+        <span class="eyebrow">
+          METODOLOGIA
+        </span>
+
+        <h2>
+          Não confundimos ausência de dados com uma resposta.
+        </h2>
+
+        <p>
+          A maioria dos diretórios tenta preencher todos os campos.
+          O AuditTech faz o contrário.
+        </p>
+
+        <p>
+          Cada resultado depende da evidência disponível.
+          Se os dados não permitirem uma conclusão segura,
+          não inventamos uma resposta.
+        </p>
+
+        <p>
+          O objetivo não é parecer que sabemos tudo.
+          É deixar claro aquilo que realmente sabemos.
+        </p>
+
+      </div>
+
+
+      <div class="methodology-results">
+
+
+        <!-- CONFIRMADO -->
+
+        <div class="result match">
+
+          <div class="result-icon">
+            ✓
+          </div>
+
+          <div class="result-content">
+
+            <strong>
+              CONFIRMADO
+            </strong>
+
+            <p>
+              Existe evidência suficiente para concluir
+              que o software cumpre o critério.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- NÃO CORRESPONDE -->
+
+        <div class="result mismatch">
+
+          <div class="result-icon">
+            ×
+          </div>
+
+          <div class="result-content">
+
+            <strong>
+              NÃO CORRESPONDE
+            </strong>
+
+            <p>
+              Existe evidência suficiente de que o software
+              não cumpre o critério.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- NÃO VERIFICADO -->
+
+        <div class="result unknown">
+
+          <div class="result-icon">
+            ?
+          </div>
+
+          <div class="result-content">
+
+            <strong>
+              NÃO VERIFICADO
+            </strong>
+
+            <p>
+              A informação disponível não é suficiente
+              para chegar a uma conclusão.
+            </p>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <!-- PRINCÍPIO DE TRANSPARÊNCIA -->
+
+    <section class="transparency">
+
+      <div class="transparency-inner">
+
+        <span class="eyebrow">
+          PRINCÍPIO AUDITTECH
+        </span>
+
+        <h2>
+          Não sabemos tudo.
+          <span>E não fingimos saber.</span>
+        </h2>
+
+        <p>
+          Uma resposta incompleta é melhor do que uma resposta inventada.
+          Quando uma fonte não permite confirmar um dado,
+          o AuditTech mostra essa limitação em vez de esconder a incerteza.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    const searchInput =
+      document.querySelector('#search') as HTMLInputElement | null;
+
+    const cards =
+      Array.from(document.querySelectorAll('.software-card'));
+
+    const noResults =
+      document.querySelector('#noResults') as HTMLElement | null;
+
+
+    searchInput?.addEventListener('input', () => {
+
+      const query =
+        searchInput.value.trim().toLowerCase();
+
+      let visible = 0;
+
+
+      cards.forEach((card) => {
+
+        const name =
+          card.getAttribute('data-name') ?? '';
+
+        const category =
+          card.getAttribute('data-category') ?? '';
+
+
+        const matches =
+          !query ||
+          name.includes(query) ||
+          category.includes(query);
+
+
+        card.style.display =
+          matches ? '' : 'none';
+
+
+        if (matches) {
+          visible++;
+        }
+
+      });
+
+
+      if (noResults) {
+
+        noResults.style.display =
+          visible === 0 ? 'block' : 'none';
+
+      }
+
+    });
+
+  </script>
+
 </Layout>
+
+
+<style>
+
+  main {
+    background: #f8fafc;
+  }
+
+
+  /* =========================
+     HERO
+  ========================= */
+
+  .hero {
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 100px 20px 90px;
+
+    text-align: center;
+
+  }
+
+
+  .trust-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 16px;
+
+    background: #ecfdf5;
+
+    border: 1px solid #a7f3d0;
+
+    color: #047857;
+
+    border-radius: 999px;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+  }
+
+
+  .dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #10b981;
+
+  }
+
+
+  .hero h1 {
+
+    margin: 30px auto 20px;
+
+    max-width: 850px;
+
+    font-size: clamp(3rem, 7vw, 5.5rem);
+
+    line-height: 1;
+
+    letter-spacing: -0.055em;
+
+    color: #0f172a;
+
+  }
+
+
+  .hero h1 span {
+
+    display: block;
+
+    color: #0284c7;
+
+  }
+
+
+  .hero-description {
+
+    max-width: 700px;
+
+    margin: 0 auto 35px;
+
+    color: #64748b;
+
+    font-size: 1.2rem;
+
+    line-height: 1.7;
+
+  }
+
+
+  .search-box {
+
+    position: relative;
+
+    max-width: 650px;
+
+    margin: 0 auto;
+
+  }
+
+
+  .search-box input {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 20px 24px 20px 55px;
+
+    border: 2px solid #cbd5e1;
+
+    border-radius: 16px;
+
+    background: white;
+
+    color: #0f172a;
+
+    font-size: 1rem;
+
+    outline: none;
+
+    box-shadow:
+      0 15px 35px rgba(15, 23, 42, 0.08);
+
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+  }
+
+
+  .search-box input:focus {
+
+    border-color: #0284c7;
+
+    box-shadow:
+      0 15px 40px rgba(2, 132, 199, 0.12);
+
+  }
+
+
+  .search-icon {
+
+    position: absolute;
+
+    left: 20px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 1.7rem;
+
+    color: #0284c7;
+
+  }
+
+
+  .principles {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 35px;
+
+    margin-top: 35px;
+
+    flex-wrap: wrap;
+
+  }
+
+
+  .principles div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+  }
+
+
+  .principles strong {
+
+    color: #334155;
+
+    font-size: 0.9rem;
+
+  }
+
+
+  .principles span {
+
+    color: #94a3b8;
+
+    font-size: 0.8rem;
+
+  }
+
+
+  /* =========================
+     CATALOGO
+  ========================= */
+
+  .catalog {
+
+    max-width: 1150px;
+
+    margin: 0 auto;
+
+    padding: 70px 20px;
+
+  }
+
+
+  .section-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    gap: 30px;
+
+    margin-bottom: 30px;
+
+  }
+
+
+  .eyebrow {
+
+    color: #0284c7;
+
+    font-size: 0.75rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+
+  }
+
+
+  .section-header h2 {
+
+    margin: 8px 0;
+
+    font-size: 2.2rem;
+
+    color: #0f172a;
+
+    letter-spacing: -0.03em;
+
+  }
+
+
+  .section-header p {
+
+    margin: 0;
+
+    color: #64748b;
+
+  }
+
+
+  .catalog-count {
+
+    color: #64748b;
+
+    white-space: nowrap;
+
+    font-weight: 700;
+
+  }
+
+
+  .software-grid {
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+  }
+
+
+  .software-card {
+
+    padding: 28px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 20px;
+
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s,
+      border-color 0.2s;
+
+  }
+
+
+  .software-card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #bae6fd;
+
+    box-shadow:
+      0 20px 40px rgba(15, 23, 42, 0.08);
+
+  }
+
+
+  .card-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    align-items: center;
+
+  }
+
+
+  .category {
+
+    padding: 6px 10px;
+
+    border-radius: 8px;
+
+    background: #f0f9ff;
+
+    color: #0369a1;
+
+    font-size: 0.75rem;
+
+    font-weight: 800;
+
+  }
+
+
+  .status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: #047857;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+  }
+
+
+  .status-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #10b981;
+
+  }
+
+
+  .software-card h3 {
+
+    margin: 25px 0 8px;
+
+    font-size: 1.6rem;
+
+    color: #0f172a;
+
+  }
+
+
+  .goal {
+
+    margin: 0 0 25px;
+
+    color: #64748b;
+
+    font-size: 0.9rem;
+
+  }
+
+
+  .card-info {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 25px;
+
+  }
+
+
+  .card-info div {
+
+    padding: 13px;
+
+    background: #f8fafc;
+
+    border-radius: 10px;
+
+  }
+
+
+  .card-info span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #94a3b8;
+
+    font-size: 0.75rem;
+
+  }
+
+
+  .card-info strong {
+
+    color: #334155;
+
+    font-size: 0.9rem;
+
+  }
+
+
+  .card-button {
+
+    display: block;
+
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background: #0f172a;
+
+    color: white;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    transition: background 0.2s;
+
+  }
+
+
+  .card-button:hover {
+
+    background: #0284c7;
+
+  }
+
+
+  .no-results {
+
+    display: none;
+
+    padding: 50px;
+
+    text-align: center;
+
+  }
+
+
+  .no-results h3 {
+
+    color: #0f172a;
+
+  }
+
+
+  .no-results p {
+
+    color: #64748b;
+
+  }
+
+
+  /* =========================
+     METODOLOGIA
+  ========================= */
+
+  .methodology {
+
+    max-width: 1150px;
+
+    margin: 40px auto 100px;
+
+    padding: 70px 20px;
+
+    display: grid;
+
+    grid-template-columns: 1.1fr 0.9fr;
+
+    gap: 70px;
+
+    align-items: center;
+
+  }
+
+
+  .methodology-content h2 {
+
+    max-width: 650px;
+
+    margin: 15px 0 25px;
+
+    font-size: 2.5rem;
+
+    line-height: 1.15;
+
+    letter-spacing: -0.04em;
+
+    color: #0f172a;
+
+  }
+
+
+  .methodology-content p {
+
+    max-width: 650px;
+
+    color: #64748b;
+
+    line-height: 1.7;
+
+    margin-bottom: 18px;
+
+  }
+
+
+  .methodology-results {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+  }
+
+
+  .result {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 16px;
+
+    padding: 22px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 16px;
+
+  }
+
+
+  .result-icon {
+
+    flex: 0 0 40px;
+
+    width: 40px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 1.2rem;
+
+    font-weight: 900;
+
+  }
+
+
+  .result-content {
+
+    min-width: 0;
+
+  }
+
+
+  .result-content strong {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #0f172a;
+
+    font-size: 0.9rem;
+
+    letter-spacing: 0.02em;
+
+  }
+
+
+  .result-content p {
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+
+  }
+
+
+  .match .result-icon {
+
+    background: #dcfce7;
+
+    color: #15803d;
+
+  }
+
+
+  .mismatch .result-icon {
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+  }
+
+
+  .unknown .result-icon {
+
+    background: #fef3c7;
+
+    color: #b45309;
+
+  }
+
+
+  /* =========================
+     TRANSPARÊNCIA
+  ========================= */
+
+  .transparency {
+
+    max-width: 1150px;
+
+    margin: 0 auto 120px;
+
+    padding: 0 20px;
+
+  }
+
+
+  .transparency-inner {
+
+    padding: 70px 50px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 24px;
+
+    background: white;
+
+    text-align: center;
+
+  }
+
+
+  .transparency-inner h2 {
+
+    max-width: 750px;
+
+    margin: 18px auto;
+
+    color: #0f172a;
+
+    font-size: clamp(2rem, 4vw, 3.2rem);
+
+    line-height: 1.1;
+
+    letter-spacing: -0.04em;
+
+  }
+
+
+  .transparency-inner h2 span {
+
+    display: block;
+
+    color: #0284c7;
+
+  }
+
+
+  .transparency-inner p {
+
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    color: #64748b;
+
+    line-height: 1.7;
+
+  }
+
+
+  /* =========================
+     RESPONSIVE
+  ========================= */
+
+  @media (max-width: 750px) {
+
+    .hero {
+
+      padding-top: 70px;
+
+    }
+
+
+    .hero h1 {
+
+      font-size: clamp(2.8rem, 13vw, 4rem);
+
+    }
+
+
+    .principles {
+
+      flex-direction: column;
+
+      gap: 15px;
+
+    }
+
+
+    .section-header {
+
+      align-items: flex-start;
+
+      flex-direction: column;
+
+    }
+
+
+    .software-grid {
+
+      grid-template-columns: 1fr;
+
+    }
+
+
+    .methodology {
+
+      grid-template-columns: 1fr;
+
+      gap: 35px;
+
+    }
+
+
+    .transparency-inner {
+
+      padding: 50px 25px;
+
+    }
+
+  }
+
+</style>

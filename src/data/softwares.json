@@ -1,11 +1,76 @@
 [
   {
-    "slug": "em-construcao",
-    "titulo": "Plataforma de Comparações em Atualização",
-    "categoria": "Aviso",
-    "scoreAlpha": "0.0",
-    "scoreBeta": "0.0",
-    "descricao": "Estamos a preparar análises técnicas detalhadas e comparativos de software B2B para o mercado. Os conteúdos e links de parceiros estarão disponíveis brevemente.",
-    "linkAfiliado": "#"
+    "id": "make",
+    "name": "Make",
+    "commercialStatus": "active",
+    "category": "automation",
+    "targetCompanySize": [
+      "startup",
+      "small",
+      "medium",
+      "enterprise"
+    ],
+    "primaryGoals": [
+      "automation"
+    ],
+    "pricing": {
+      "model": "subscription",
+      "currency": "USD",
+      "billingPeriod": "monthly",
+      "startingPrice": 0,
+      "priceVerifiedAt": "2026-08-19T00:00:00Z",
+      "evidence": [
+        {
+          "sourceUrl": "https://www.make.com/en/pricing",
+          "sourceType": "pricing",
+          "checkedAt": "2026-08-19T00:00:00Z"
+        }
+      ]
+    },
+    "verifiedAt": "2026-08-19T00:00:00Z",
+    "evidence": [
+      {
+        "sourceUrl": "https://www.make.com/en/pricing",
+        "sourceType": "official",
+        "checkedAt": "2026-08-19T00:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fin-ai-agent",
+    "name": "Fin AI Agent",
+    "commercialStatus": "active",
+    "category": "support",
+    "targetCompanySize": [
+      "startup",
+      "small",
+      "medium",
+      "enterprise"
+    ],
+    "primaryGoals": [
+      "customer-support"
+    ],
+    "pricing": {
+      "model": "usage_based",
+      "currency": "USD",
+      "billingPeriod": "usage",
+      "startingPrice": 0.99,
+      "priceVerifiedAt": "2026-08-19T00:00:00Z",
+      "evidence": [
+        {
+          "sourceUrl": "https://www.intercom.com/help/en/articles/8205718-fin-ai-agent-outcomes",
+          "sourceType": "pricing",
+          "checkedAt": "2026-08-19T00:00:00Z"
+        }
+      ]
+    },
+    "verifiedAt": "2026-08-19T00:00:00Z",
+    "evidence": [
+      {
+        "sourceUrl": "https://www.intercom.com/help/en/articles/8205718-fin-ai-agent-outcomes",
+        "sourceType": "official",
+        "checkedAt": "2026-08-19T00:00:00Z"
+      }
+    ]
   }
 ]

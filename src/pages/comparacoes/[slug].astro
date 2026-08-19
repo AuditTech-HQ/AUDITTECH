@@ -1,32 +1,324 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import softwares from '../../data/softwares.json';
+import { adaptSoftwareRegistry } from '../../lib/adapter';
+import { evaluateSoftware } from '../../lib/engine';
 
-export async function getStaticPaths() {
-  return softwares.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
+export function getStaticPaths() {
+  const registry = adaptSoftwareRegistry(softwares);
+
+  return registry.map((software) => ({
+    params: {
+      slug: software.id,
+    },
+    props: {
+      software,
+    },
   }));
 }
 
-const { item } = Astro.props;
+const { software } = Astro.props;
+
+const criteria = {
+  category: software.category,
+  companySize: software.targetCompanySize[0],
+  goal: software.primaryGoals[0],
+};
+
+const audit = evaluateSoftware(software, criteria);
+
+const resultLabels = {
+  MATCH: 'CONFIRMADO',
+  MISMATCH: 'NÃO CORRESPONDE',
+  UNKNOWN: 'NÃO VERIFICADO',
+};
+
+const resultDescriptions = {
+  MATCH: 'Os critérios analisados são compatíveis com os dados verificados.',
+  MISMATCH: 'Foi encontrado um conflito entre os critérios e os dados da ferramenta.',
+  UNKNOWN: 'Os dados disponíveis não permitem chegar a uma conclusão segura.',
+};
 ---
 
-<Layout title={`${item.titulo} - Plataforma em Construção | AuditTech`}>
-  <div style="max-width: 800px; margin: 80px auto; padding: 0 20px; font-family: sans-serif; text-align: center;">
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-      <span style="background: #f1f5f9; color: #475569; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase;">
-        {item.categoria}
+<Layout title={`${software.name} — Auditoria | AuditTech`}>
+  <main class="page">
+
+    <a href="/" class="back">
+      ← Voltar ao catálogo
+    </a>
+
+    <section class="header">
+      <span class="category">
+        {software.category}
       </span>
-      <h1 style="font-size: 2.2rem; color: #0f172a; margin: 20px 0;">
-        {item.titulo}
-      </h1>
-      <p style="font-size: 1.1rem; color: #64748b; line-height: 1.6; margin-bottom: 30px;">
-        {item.descricao}
+
+      <h1>{software.name}</h1>
+
+      <p>
+        Auditoria baseada nos dados atualmente verificados pelo AuditTech.
       </p>
-      <a href="/" style="background: #0284c7; color: #fff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600;">
-        Voltar à Página Principal
-      </a>
-    </div>
-  </div>
+    </section>
+
+    <section class={`audit-result ${audit.result.toLowerCase()}`}>
+
+      <div class="result-icon">
+        {audit.result === 'MATCH' && '✓'}
+        {audit.result === 'MISMATCH' && '×'}
+        {audit.result === 'UNKNOWN' && '?'}
+      </div>
+
+      <div>
+        <span class="result-label">
+          {resultLabels[audit.result]}
+        </span>
+
+        <h2>
+          {resultDescriptions[audit.result]}
+        </h2>
+      </div>
+
+    </section>
+
+    <section class="details">
+
+      <div class="card">
+        <h2>Critérios analisados</h2>
+
+        <div class="row">
+          <span>Categoria</span>
+          <strong>{software.category}</strong>
+        </div>
+
+        <div class="row">
+          <span>Empresa</span>
+          <strong>{criteria.companySize}</strong>
+        </div>
+
+        <div class="row">
+          <span>Objetivo</span>
+          <strong>{criteria.goal}</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Justificação</h2>
+
+        {audit.reasons.map((reason) => (
+          <p class="reason">
+            {reason}
+          </p>
+        ))}
+      </div>
+
+    </section>
+
+    <section class="evidence">
+
+      <h2>Evidência</h2>
+
+      <p>
+        Última verificação:
+        <strong>
+          {new Date(software.verifiedAt).toLocaleDateString('pt-PT')}
+        </strong>
+      </p>
+
+      <div class="sources">
+        {software.evidence.map((evidence) => (
+          <a
+            href={evidence.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {evidence.sourceType} →
+          </a>
+        ))}
+      </div>
+
+    </section>
+
+  </main>
 </Layout>
+
+<style>
+
+  .page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 20px 100px;
+  }
+
+  .back {
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .back:hover {
+    color: #0284c7;
+  }
+
+  .header {
+    margin: 50px 0 35px;
+  }
+
+  .category {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f0f9ff;
+    color: #0369a1;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 15px 0 10px;
+    color: #0f172a;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: -0.05em;
+  }
+
+  .header p {
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+
+  .audit-result {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    margin-bottom: 30px;
+  }
+
+  .result-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    font-size: 1.8rem;
+    font-weight: 900;
+  }
+
+  .match .result-icon {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .mismatch .result-icon {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .unknown .result-icon {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .result-label {
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+  }
+
+  .audit-result h2 {
+    margin: 5px 0 0;
+    color: #0f172a;
+    font-size: 1.15rem;
+  }
+
+  .details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .card {
+    padding: 28px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+  }
+
+  .card h2,
+  .evidence h2 {
+    margin-top: 0;
+    color: #0f172a;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .row span {
+    color: #64748b;
+  }
+
+  .row strong {
+    color: #0f172a;
+  }
+
+  .reason {
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8fafc;
+    border-radius: 10px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .evidence {
+    margin-top: 20px;
+    padding: 28px;
+    background: #f8fafc;
+    border-radius: 18px;
+  }
+
+  .evidence p {
+    color: #64748b;
+  }
+
+  .sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sources a {
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #0369a1;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .sources a:hover {
+    border-color: #0284c7;
+  }
+
+  @media (max-width: 700px) {
+    .details {
+      grid-template-columns: 1fr;
+    }
+
+    .audit-result {
+      align-items: flex-start;
+    }
+  }
+
+</style>
